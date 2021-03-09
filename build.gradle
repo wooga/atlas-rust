@@ -1,0 +1,55 @@
+/*
+ * Copyright 2021 Wooga GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+plugins {
+    id 'net.wooga.plugins' version '1.5.0'
+}
+
+group 'net.wooga.gradle'
+description = 'a slack plugin for Gradle.'
+
+pluginBundle {
+    website = 'https://wooga.github.io/atlas-rust/'
+    vcsUrl = 'https://github.com/wooga/atlas-rust'
+    tags = ['rust', 'cargo']
+
+    plugins {
+        rustLib {
+            id = 'net.wooga.rust.lib'
+            displayName = 'Rust Library plugin'
+            description = 'A simple gradle plugin to build rust library crates'
+        }
+    }
+}
+
+github {
+    repositoryName = "wooga/atlas-rust"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    integrationTestImplementation 'org.apache.commons:commons-text:[1.8,2)'
+    testImplementation('org.spockframework:spock-core:1.2-groovy-2.4') {
+        exclude module: 'groovy-all'
+    }
+    implementation 'org.tukaani:xz:1.8'
+    //compile("org.ysb33r.gradle:grolifant:0.17.0")
+    testImplementation 'com.github.stefanbirkner:system-rules:[1.18.0,2)'
+}
