@@ -34,9 +34,17 @@ class IntegrationSpec extends nebula.test.IntegrationSpec {
     def escapedPath(String path) {
         String osName = System.getProperty("os.name").toLowerCase()
         if (osName.contains("windows")) {
-            return StringEscapeUtils.escapeJava(path).replaceAll(/\//,"\\\\")
+            return StringEscapeUtils.escapeJava(path)
         }
         path
+    }
+
+    static String osPath(String path) {
+        String osName = System.getProperty("os.name").toLowerCase()
+        if (osName.contains("windows")) {
+            path = path.startsWith('/') ? "c:" + path : path
+        }
+        new File(path).path
     }
 
     def setup() {
@@ -103,13 +111,7 @@ class IntegrationSpec extends nebula.test.IntegrationSpec {
                         value = "project.layout.file(${wrapValueBasedOnType(rawValue, "Provider<File>", fallback)})"
                         break
                     case "Directory":
-                        value = """
-                                project.provider({
-                                    def d = project.objects.directoryProperty()
-                                    d.set(${wrapValueBasedOnType(rawValue, "File", fallback)})
-                                    d.get()
-                                })
-                        """.trim().stripIndent()
+                        value = "project.provider({def d = project.objects.directoryProperty();d.set(${wrapValueBasedOnType(rawValue, "File", fallback)});d.get()})"
                         break
                     default:
                         value = "project.provider(${wrapValueBasedOnType(rawValue, "Closure<${subType}>", fallback)})"

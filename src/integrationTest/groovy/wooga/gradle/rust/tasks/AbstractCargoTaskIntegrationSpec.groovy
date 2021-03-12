@@ -55,55 +55,55 @@ abstract class AbstractCargoTaskIntegrationSpec extends RustIntegrationSpec {
         outputContains(result, "property: " + testValue.toString())
 
         where:
-        property     | method           | rawValue                      | expectedValue | type
-        "logFile"    | "logFile"        | "/some/path/test1.log"        | _             | "File"
-        "logFile"    | "logFile"        | "/some/path/test2.log"        | _             | "Provider<RegularFile>"
-        "logFile"    | "logFile.set"    | "/some/path/test3.log"        | _             | "File"
-        "logFile"    | "logFile.set"    | "/some/path/test4.log"        | _             | "Provider<RegularFile>"
-        "logFile"    | "setLogFile"     | "/some/path/test5.log"        | _             | "File"
-        "logFile"    | "setLogFile"     | "/some/path/test6.log"        | _             | "Provider<RegularFile>"
+        property     | method           | rawValue                              | expectedValue | type
+        "logFile"    | "logFile"        | osPath("/some/path/test1.log")        | _             | "File"
+        "logFile"    | "logFile"        | osPath("/some/path/test2.log")        | _             | "Provider<RegularFile>"
+        "logFile"    | "logFile.set"    | osPath("/some/path/test3.log")        | _             | "File"
+        "logFile"    | "logFile.set"    | osPath("/some/path/test4.log")        | _             | "Provider<RegularFile>"
+        "logFile"    | "setLogFile"     | osPath("/some/path/test5.log")        | _             | "File"
+        "logFile"    | "setLogFile"     | osPath("/some/path/test6.log")        | _             | "Provider<RegularFile>"
 
-        "manifest"   | "manifest"       | "/some/path/test1/Cargo.toml" | _             | "File"
-        "manifest"   | "manifest"       | "/some/path/test2/Cargo.toml" | _             | "Provider<RegularFile>"
-        "manifest"   | "manifest.set"   | "/some/path/test3/Cargo.toml" | _             | "File"
-        "manifest"   | "manifest.set"   | "/some/path/test4/Cargo.toml" | _             | "Provider<RegularFile>"
-        "manifest"   | "setManifest"    | "/some/path/test5/Cargo.toml" | _             | "File"
-        "manifest"   | "setManifest"    | "/some/path/test6/Cargo.toml" | _             | "Provider<RegularFile>"
+        "manifest"   | "manifest"       | osPath("/some/path/test1/Cargo.toml") | _             | "File"
+        "manifest"   | "manifest"       | osPath("/some/path/test2/Cargo.toml") | _             | "Provider<RegularFile>"
+        "manifest"   | "manifest.set"   | osPath("/some/path/test3/Cargo.toml") | _             | "File"
+        "manifest"   | "manifest.set"   | osPath("/some/path/test4/Cargo.toml") | _             | "Provider<RegularFile>"
+        "manifest"   | "setManifest"    | osPath("/some/path/test5/Cargo.toml") | _             | "File"
+        "manifest"   | "setManifest"    | osPath("/some/path/test6/Cargo.toml") | _             | "Provider<RegularFile>"
 
-        "cargoPath"  | "cargoPath"      | "/some/path/test1/cargo"      | _             | "File"
-        "cargoPath"  | "cargoPath"      | "/some/path/test2/cargo"      | _             | "Provider<RegularFile>"
-        "cargoPath"  | "cargoPath.set"  | "/some/path/test3/cargo"      | _             | "File"
-        "cargoPath"  | "cargoPath.set"  | "/some/path/test4/cargo"      | _             | "Provider<RegularFile>"
-        "cargoPath"  | "setCargoPath"   | "/some/path/test5/cargo"      | _             | "File"
-        "cargoPath"  | "setCargoPath"   | "/some/path/test6/cargo"      | _             | "Provider<RegularFile>"
+        "cargoPath"  | "cargoPath"      | osPath("/some/path/test1/cargo")      | _             | "File"
+        "cargoPath"  | "cargoPath"      | osPath("/some/path/test2/cargo")      | _             | "Provider<RegularFile>"
+        "cargoPath"  | "cargoPath.set"  | osPath("/some/path/test3/cargo")      | _             | "File"
+        "cargoPath"  | "cargoPath.set"  | osPath("/some/path/test4/cargo")      | _             | "Provider<RegularFile>"
+        "cargoPath"  | "setCargoPath"   | osPath("/some/path/test5/cargo")      | _             | "File"
+        "cargoPath"  | "setCargoPath"   | osPath("/some/path/test6/cargo")      | _             | "Provider<RegularFile>"
 
-        "workingDir" | "workingDir"     | "/some/path/test1"            | _             | "File"
-        "workingDir" | "workingDir"     | "/some/path/test2"            | _             | "Provider<Directory>"
-        "workingDir" | "workingDir.set" | "/some/path/test3"            | _             | "File"
-        "workingDir" | "workingDir.set" | "/some/path/test4"            | _             | "Provider<Directory>"
-        "workingDir" | "setWorkingDir"  | "/some/path/test5"            | _             | "File"
-        "workingDir" | "setWorkingDir"  | "/some/path/test6"            | _             | "Provider<Directory>"
+        "workingDir" | "workingDir"     | osPath("/some/path/test1")            | _             | "File"
+        "workingDir" | "workingDir"     | osPath("/some/path/test2")            | _             | "Provider<Directory>"
+        "workingDir" | "workingDir.set" | osPath("/some/path/test3")            | _             | "File"
+        "workingDir" | "workingDir.set" | osPath("/some/path/test4")            | _             | "Provider<Directory>"
+        "workingDir" | "setWorkingDir"  | osPath("/some/path/test5")            | _             | "File"
+        "workingDir" | "setWorkingDir"  | osPath("/some/path/test6")            | _             | "Provider<Directory>"
 
-        "jobs"       | "jobs"           | 1                             | _             | "Integer"
-        "jobs"       | "jobs"           | 2                             | _             | "Provider<Integer>"
-        "jobs"       | "jobs.set"       | 3                             | _             | "Integer"
-        "jobs"       | "jobs.set"       | 4                             | _             | "Provider<Integer>"
-        "jobs"       | "setJobs"        | 5                             | _             | "Integer"
-        "jobs"       | "setJobs"        | 6                             | _             | "Provider<Integer>"
+        "jobs"       | "jobs"           | 1                                     | _             | "Integer"
+        "jobs"       | "jobs"           | 2                                     | _             | "Provider<Integer>"
+        "jobs"       | "jobs.set"       | 3                                     | _             | "Integer"
+        "jobs"       | "jobs.set"       | 4                                     | _             | "Provider<Integer>"
+        "jobs"       | "setJobs"        | 5                                     | _             | "Integer"
+        "jobs"       | "setJobs"        | 6                                     | _             | "Provider<Integer>"
 
-        "target"     | "target"         | "aarch64-unknown-linux-gnu"   | _             | "String"
-        "target"     | "target"         | "i686-pc-windows-gnu"         | _             | "Provider<String>"
-        "target"     | "target.set"     | "i686-pc-windows-msvc"        | _             | "String"
-        "target"     | "target.set"     | "i686-unknown-linux-gnu"      | _             | "Provider<String>"
-        "target"     | "setTarget"      | "x86_64-pc-windows-gnu"       | _             | "String"
-        "target"     | "setTarget"      | "x86_64-unknown-linux-gnu"    | _             | "Provider<String>"
+        "target"     | "target"         | "aarch64-unknown-linux-gnu"           | _             | "String"
+        "target"     | "target"         | "i686-pc-windows-gnu"                 | _             | "Provider<String>"
+        "target"     | "target.set"     | "i686-pc-windows-msvc"                | _             | "String"
+        "target"     | "target.set"     | "i686-unknown-linux-gnu"              | _             | "Provider<String>"
+        "target"     | "setTarget"      | "x86_64-pc-windows-gnu"               | _             | "String"
+        "target"     | "setTarget"      | "x86_64-unknown-linux-gnu"            | _             | "Provider<String>"
 
-        "release"    | "release"        | true                          | _             | "Boolean"
-        "release"    | "release"        | false                         | _             | "Provider<Boolean>"
-        "release"    | "release.set"    | true                          | _             | "Boolean"
-        "release"    | "release.set"    | false                         | _             | "Provider<Boolean>"
-        "release"    | "setRelease"     | true                          | _             | "Boolean"
-        "release"    | "setRelease"     | false                         | _             | "Provider<Boolean>"
+        "release"    | "release"        | true                                  | _             | "Boolean"
+        "release"    | "release"        | false                                 | _             | "Provider<Boolean>"
+        "release"    | "release.set"    | true                                  | _             | "Boolean"
+        "release"    | "release.set"    | false                                 | _             | "Provider<Boolean>"
+        "release"    | "setRelease"     | true                                  | _             | "Boolean"
+        "release"    | "setRelease"     | false                                 | _             | "Provider<Boolean>"
 
 
         value = wrapValueBasedOnType(rawValue, type)
@@ -137,12 +137,12 @@ abstract class AbstractCargoTaskIntegrationSpec extends RustIntegrationSpec {
         outputContains(result, expectedCommandlineFlag)
 
         where:
-        property       | method             | rawValue                        | type           | expectedCommandlineFlag
-        "manifest"     | "manifest.set"     | "/some/path/test1/Cargo.toml"   | "File"         | "--manifest-path /some/path/test1/Cargo.toml"
-        "jobs"         | "jobs.set"         | 22                              | "Integer"      | "--jobs 22"
-        "target"       | "target.set"       | "i686-pc-windows-gnu"           | "String"       | "--target i686-pc-windows-gnu"
-        "release"      | "release.set"      | true                            | "Boolean"      | "--release"
-        "nightlyFlags" | "nightlyFlags.set" | ["unstable-options", "timings"] | "List<String>" | "-Z unstable-options -Z timings"
+        property       | method             | rawValue                              | type           | expectedCommandlineFlag
+        "manifest"     | "manifest.set"     | osPath("/some/path/test1/Cargo.toml") | "File"         | "--manifest-path ${rawValue}"
+        "jobs"         | "jobs.set"         | 22                                    | "Integer"      | "--jobs ${rawValue}"
+        "target"       | "target.set"       | "i686-pc-windows-gnu"                 | "String"       | "--target ${rawValue}"
+        "release"      | "release.set"      | true                                  | "Boolean"      | "--release"
+        "nightlyFlags" | "nightlyFlags.set" | ["unstable-options", "timings"]       | "List<String>" | "-Z ${rawValue[0]} -Z ${rawValue[1]}"
         value = wrapValueBasedOnType(rawValue, type)
     }
 

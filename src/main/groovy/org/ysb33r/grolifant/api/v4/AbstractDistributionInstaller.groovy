@@ -17,8 +17,10 @@ package org.ysb33r.grolifant.api.v4
 import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
+import org.apache.commons.io.FileSystemUtils
 import org.gradle.api.Action
 import org.gradle.api.Project
+import org.gradle.api.file.CopySpec
 import org.gradle.api.file.FileCopyDetails
 import org.gradle.api.file.FileTree
 import org.gradle.internal.os.OperatingSystem
@@ -31,6 +33,8 @@ import org.ysb33r.grolifant.internal.v4.downloader.ArtifactDownloader
 import org.ysb33r.grolifant.internal.v4.downloader.Downloader
 import org.ysb33r.grolifant.internal.v4.msi.LessMSIUnpackerTool
 
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.security.MessageDigest
 
 import static org.ysb33r.grolifant.api.v4.UriUtils.safeUri
@@ -384,6 +388,12 @@ abstract class AbstractDistributionInstaller {
                 }
             }
             return project.tarTree(unpackedXZTar)
+        } else if(name.endsWith('.msi')) {
+            def dest = new File(srcArchive.parentFile, srcArchive.name.replace(".msi", ""))
+            dest.mkdirs()
+            dest = new File(dest, "install.msi")
+            Files.copy(Paths.get(srcArchive.path), Paths.get(dest.path))
+            return project.fileTree(srcArchive)
         }
 
         throw new IllegalArgumentException("${name} is not a supported archive type")

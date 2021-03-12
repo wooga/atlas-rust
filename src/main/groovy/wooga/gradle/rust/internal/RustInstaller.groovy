@@ -14,20 +14,23 @@
 
 package wooga.gradle.rust.internal
 
-import groovy.transform.CompileDynamic
 import groovy.transform.CompileStatic
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.logging.LogLevel
 import org.gradle.process.ExecResult
 import org.gradle.process.ExecSpec
+import org.ysb33r.grolifant.api.OperatingSystem
+import org.ysb33r.grolifant.api.errors.DistributionFailedException
+import org.ysb33r.grolifant.api.v4.AbstractDistributionInstaller
 import wooga.gradle.rust.SupportedAbi
 import wooga.gradle.rust.SupportedArch
 import wooga.gradle.rust.SupportedOs
 import wooga.gradle.rust.UnsupportedConfigurationException
-import org.ysb33r.grolifant.api.v4.AbstractDistributionInstaller
-import org.ysb33r.grolifant.api.OperatingSystem
-import org.ysb33r.grolifant.api.errors.DistributionFailedException
+
+import java.nio.file.Files
+import java.nio.file.Paths
+
 import static wooga.gradle.rust.SupportedAbi.*
 import static wooga.gradle.rust.SupportedArch.*
 import static wooga.gradle.rust.SupportedOs.*
@@ -39,10 +42,10 @@ import static wooga.gradle.rust.SupportedOs.*
 @CompileStatic
 class RustInstaller extends AbstractDistributionInstaller {
 
-    static final String DISTPATH = 'native-binaries/rust'
+    static final String DISTPATH = 'native'
     static final OperatingSystem OS = OperatingSystem.current()
     static final OperatingSystem.Arch ARCH = OS.getArch()
-    static final String INSTALLDIR_POSTFIX = '.installed'
+    static final String INSTALLDIR_POSTFIX = '.i'
 
     /** The URI where to retrieve Rust binaries.
      * This is a global setting which is not meant to be overridden direcrly by the user.
@@ -93,7 +96,9 @@ class RustInstaller extends AbstractDistributionInstaller {
 
         this.rustOs = fromOS(OS)
         this.rustArch = fromArch(ARCH)
-
+        this.installerPackageExtension = (OS.windows) ? ".msi" : ".tar.gz"
+        this.rustcPathPart = (OS.windows) ? "bin/rustc.exe" : "bin/rustc"
+        this.cargoPathPart = (OS.windows) ? "bin/cargo.exe" : "bin/cargo"
         if (!rustOs.validArch(rustArch)) {
             throw new UnsupportedConfigurationException(rustOs, rustArch)
         }
@@ -140,7 +145,7 @@ class RustInstaller extends AbstractDistributionInstaller {
      */
     @Override
     URI uriFromVersion(String version) {
-        "${baseURI}/rust-${version}-${rustArch}-${rustOs.platform}-${rustOs.name}${abiString}.tar.gz".toURI()
+        "${baseURI}/rust-${version}-${rustArch}-${rustOs.platform}-${rustOs.name}${abiString}${installerPackageExtension}".toURI()
     }
 
     /** Returns the location of the {@code cargo executable}.
@@ -148,7 +153,7 @@ class RustInstaller extends AbstractDistributionInstaller {
      * @return Location of {@code cargo} or {@code null} if not found.
      */
     File getCargoExecutablePath() {
-        getBinary('bin/cargo')
+        getBinary(cargoPathPart)
     }
 
     /** Returns the location of the {@code rustc executable}.
@@ -156,7 +161,7 @@ class RustInstaller extends AbstractDistributionInstaller {
      * @return Location of {@code rustc} or {@code null} if not found.
      */
     File getRustcExecutablePath() {
-        getBinary('bin/rustc')
+        getBinary(rustcPathPart)
     }
 
     File getHomePath() {
@@ -182,28 +187,65 @@ class RustInstaller extends AbstractDistributionInstaller {
         installRoot
     }
 
+    @Override
+    protected void unpack(File srcArchive, File destDir) {
+        if (OS.windows) {
+            final String name = srcArchive.name.toLowerCase()
+            if (name.endsWith('.msi')) {
+                def dest = new File(srcArchive.parentFile, srcArchive.name.replace(".msi", ""))
+                dest.mkdirs()
+                dest = new File(dest, "install.msi")
+                Files.copy(Paths.get(srcArchive.path), Paths.get(dest.path))
+                return
+            }
+            throw new IllegalArgumentException("${name} is not a supported archive type")
+        }
+        super.unpack(srcArchive, destDir)
+    }
+
     private static File getRustInstallDir(File unpackedDir) {
         new File(unpackedDir.parentFile, "${unpackedDir.name}${INSTALLDIR_POSTFIX}")
     }
 
     private void installRust(File unpackedDir, File installDir) {
         def project = this.project
-        if (!new File(installDir, 'bin/cargo').exists() || !new File(installDir, 'bin/rustc').exists()) {
-            // TODO: Need to deal correctly with Windows
-            ExecResult r = project.exec(new Action<ExecSpec>() {
-                @Override
-                void execute(ExecSpec exec) {
-                    exec.with {
-                        executable("${unpackedDir}/install.sh")
-                        args("--destdir=${installDir.absolutePath}")
-                        args("--prefix=/")
-                        args("--without=rust-docs")
-                        if(project.logging.level >= LogLevel.INFO) {
-                            args("--verbose")
+        if (!new File(installDir, cargoPathPart).exists() || !new File(installDir, rustcPathPart).exists()) {
+            if (OS.windows) {
+                project.exec(new Action<ExecSpec>() {
+                    @Override
+                    void execute(ExecSpec exec) {
+                        exec.with {
+                            executable("msiexec.exe")
+                            args("/I")
+                            args("${unpackedDir}\\install.msi")
+                            args("/QN")
+                            args("/L*!", "${unpackedDir}\\install_log.log")
+                            args("INSTALLDIR=${installDir.absolutePath}")
+                            args('ALLUSERS=2', 'MSIINSTALLPERUSER=1')
+                            args('ADDDEFAULT=Rustc,Cargo,Std')
+                        }
+
+                    }
+                })
+            } else {
+                ExecResult r = project.exec(new Action<ExecSpec>() {
+                    @Override
+                    void execute(ExecSpec exec) {
+                        exec.with {
+                            executable("${unpackedDir}/install.sh")
+                            args("--destdir=${installDir.absolutePath}")
+                            args("--prefix=/")
+                            args("--without=rust-docs")
+                            if (project.logging.level >= LogLevel.INFO) {
+                                args("--verbose")
+                            }
                         }
                     }
-                }
-            })
+                })
+            }
+            installDir.mkdirs()
+
+            println("done")
         } else {
             project.logger.debug("Not installing Rust again as it already exists in ${installDir}")
         }
@@ -222,4 +264,7 @@ class RustInstaller extends AbstractDistributionInstaller {
     private final SupportedArch rustArch
     private final SupportedOs rustOs
     private final SupportedAbi rustAbi
+    private final String cargoPathPart
+    private final String rustcPathPart
+    private final String installerPackageExtension
 }
