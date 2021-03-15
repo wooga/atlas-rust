@@ -49,7 +49,7 @@ dependencies {
     testImplementation('org.spockframework:spock-core:1.2-groovy-2.4') {
         exclude module: 'groovy-all'
     }
-    implementation 'org.tukaani:xz:1.8'
+    implementation 'org.tukaani:xz:1.9'
     //compile("org.ysb33r.gradle:grolifant:0.17.0")
     testImplementation 'com.github.stefanbirkner:system-rules:[1.18.0,2)'
 }
