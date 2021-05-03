@@ -29,7 +29,7 @@ class IntegrationSpec extends nebula.test.IntegrationSpec {
     ProvideSystemProperty properties = new ProvideSystemProperty("ignoreDeprecations", "true")
 
     @Rule
-    public final EnvironmentVariables environmentVariables = new EnvironmentVariables()
+    public EnvironmentVariables environmentVariables = new EnvironmentVariables()
 
     def escapedPath(String path) {
         String osName = System.getProperty("os.name").toLowerCase()
