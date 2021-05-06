@@ -17,7 +17,6 @@
 package wooga.gradle.rust
 
 import wooga.gradle.rust.IntegrationSpec
-import wooga.gradle.rust.RustBasePlugin
 
 class RustIntegrationSpec extends IntegrationSpec {
 

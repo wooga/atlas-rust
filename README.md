@@ -24,6 +24,11 @@ Gradle and Java Compatibility
 
 | Gradle Version | Works       |
 | :------------- | :---------: |
+| 6.3            | ![yes]      |
+| 6.4            | ![yes]      |
+| 6.5            | ![yes]      |
+| 6.6            | ![yes]      |
+| 6.7            | ![yes]      |
 | 6.8.2          | ![yes]      |
 
 Development

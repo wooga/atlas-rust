@@ -16,7 +16,7 @@
  */
 
 plugins {
-    id 'net.wooga.plugins' version '1.5.0'
+    id 'net.wooga.plugins' version '2.0.0'
 }
 
 group 'net.wooga.gradle'
@@ -46,10 +46,6 @@ repositories {
 
 dependencies {
     integrationTestImplementation 'org.apache.commons:commons-text:[1.8,2)'
-    testImplementation('org.spockframework:spock-core:1.2-groovy-2.4') {
-        exclude module: 'groovy-all'
-    }
     implementation 'org.tukaani:xz:1.8'
     //compile("org.ysb33r.gradle:grolifant:0.17.0")
-    testImplementation 'com.github.stefanbirkner:system-rules:[1.18.0,2)'
 }
