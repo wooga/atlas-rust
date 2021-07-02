@@ -17,5 +17,5 @@
 @Library('github.com/wooga/atlas-jenkins-pipeline@1.x') _
 withCredentials([string(credentialsId: 'atlas_rust_coveralls_token', variable: 'coveralls_token'),
                  string(credentialsId: 'atlas_plugins_sonar_token', variable: 'sonar_token')]) {
-    buildGradlePlugin plaforms: ['unix', 'windows'], sonarToken: sonar_token, coverallsToken: coveralls_token
+    buildGradlePlugin platforms: ['unix', 'windows'], sonarToken: sonar_token, coverallsToken: coveralls_token
 }
