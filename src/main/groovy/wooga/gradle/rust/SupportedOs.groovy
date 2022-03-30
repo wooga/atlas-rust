@@ -15,7 +15,7 @@
 package wooga.gradle.rust
 
 import groovy.transform.CompileStatic
-import org.ysb33r.grolifant.api.OperatingSystem
+import org.ysb33r.grolifant.api.core.OperatingSystem
 
 import static wooga.gradle.rust.SupportedAbi.*
 import static wooga.gradle.rust.SupportedArch.*

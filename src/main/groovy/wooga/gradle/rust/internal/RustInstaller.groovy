@@ -16,13 +16,17 @@ package wooga.gradle.rust.internal
 
 import groovy.transform.CompileStatic
 import org.gradle.api.Action
-import org.gradle.api.Project
 import org.gradle.api.logging.LogLevel
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
+import org.gradle.api.provider.Provider
 import org.gradle.process.ExecResult
 import org.gradle.process.ExecSpec
-import org.ysb33r.grolifant.api.OperatingSystem
+import org.ysb33r.grolifant.api.core.OperatingSystem
+import org.ysb33r.grolifant.api.core.ProjectOperations
 import org.ysb33r.grolifant.api.errors.DistributionFailedException
-import org.ysb33r.grolifant.api.v4.AbstractDistributionInstaller
+import org.ysb33r.grolifant.api.v4.downloader.AbstractDistributionInstaller
+import org.ysb33r.grolifant.api.v4.runnable.ExecutableDownloader
 import wooga.gradle.rust.SupportedAbi
 import wooga.gradle.rust.SupportedArch
 import wooga.gradle.rust.SupportedOs
@@ -40,15 +44,21 @@ import static wooga.gradle.rust.SupportedOs.*
  * @since 0.1
  */
 @CompileStatic
-class RustInstaller extends AbstractDistributionInstaller {
+class RustInstaller extends AbstractDistributionInstaller implements ExecutableDownloader {
+
+    private static final Logger LOGGER = Logging.getLogger(RustInstaller.class)
 
     static final String DISTPATH = 'native'
     static final OperatingSystem OS = OperatingSystem.current()
     static final OperatingSystem.Arch ARCH = OS.getArch()
     static final String INSTALLDIR_POSTFIX = '.i'
 
+    static Logger getLogger() {
+        LOGGER
+    }
+
     /** The URI where to retrieve Rust binaries.
-     * This is a global setting which is not meant to be overridden direcrly by the user.
+     * This is a global setting which is not meant to be overridden directly by the user.
      */
     static String baseURI = System.getProperty('org.ysb33r.gradle.rust.releases.uri') ?: 'https://static.rust-lang.org/dist'
 
@@ -91,9 +101,8 @@ class RustInstaller extends AbstractDistributionInstaller {
      * @theow {@link UnsupportedConfigurationException} if operating system, architecture or ABI cannot be
      * deduced from current build.
      */
-    RustInstaller(Project project, final String version) {
-        super('Rust Distribution', version, DISTPATH, project)
-
+    RustInstaller(ProjectOperations projectOperations) {
+        super('Rust Distribution', DISTPATH, projectOperations)
         this.rustOs = fromOS(OS)
         this.rustArch = fromArch(ARCH)
         this.installerPackageExtension = (OS.windows) ? ".msi" : ".tar.gz"
@@ -121,9 +130,9 @@ class RustInstaller extends AbstractDistributionInstaller {
      * @throw {@link UnsupportedConfigurationException} is architecture or ABI does not match provided
      * operating system.
      */
-    RustInstaller(Project project,
-                  final String version, final SupportedOs os, final SupportedArch arch, final SupportedAbi abi) {
-        super('Rust Distribution', version, DISTPATH, project)
+    RustInstaller(ProjectOperations projectOperations,
+                  final SupportedOs os, final SupportedArch arch, final SupportedAbi abi) {
+        super('Rust Distribution', DISTPATH, projectOperations)
 
         if (!os.validArch(arch)) {
             throw new UnsupportedConfigurationException(os, arch)
@@ -152,30 +161,30 @@ class RustInstaller extends AbstractDistributionInstaller {
      *
      * @return Location of {@code cargo} or {@code null} if not found.
      */
-    File getCargoExecutablePath() {
-        getBinary(cargoPathPart)
+    Provider<File> getCargoExecutablePath(String version) {
+        getDistributionFile(version, cargoPathPart)
     }
 
     /** Returns the location of the {@code rustc executable}.
      *
      * @return Location of {@code rustc} or {@code null} if not found.
      */
-    File getRustcExecutablePath() {
-        getBinary(rustcPathPart)
+    Provider<File> getRustcExecutablePath(String version) {
+        getDistributionFile(version, rustcPathPart)
     }
 
-    File getHomePath() {
-        distributionRoot
+    Provider<File> getHomePath(String version) {
+       getDistributionRoot(version)
     }
 
     @Override
-    protected File getAndVerifyDistributionRoot(File distDir, String distributionDescription) {
+    protected File verifyDistributionRoot(final File distDir) {
         List<File> dirs = listDirs(distDir)
         if (dirs.isEmpty()) {
-            throw new DistributionFailedException("Rust distribution '${distributionDescription}' does not contain any directories. Expected to find 1 or directories.")
+            throw new DistributionFailedException("Rust distribution '${distributionName}' does not contain any directories. Expected to find 1 or directories.")
         }
         if (dirs.size() > 2) {
-            throw new DistributionFailedException("Rust distribution '${distributionDescription} contains too many directories. Expected to find 1 or 2 directories.")
+            throw new DistributionFailedException("Rust distribution '${distributionName} contains too many directories. Expected to find 1 or 2 directories.")
         }
 
         File unpackedRoot = dirs.find { File it ->
@@ -208,10 +217,9 @@ class RustInstaller extends AbstractDistributionInstaller {
     }
 
     private void installRust(File unpackedDir, File installDir) {
-        def project = this.project
         if (!new File(installDir, cargoPathPart).exists() || !new File(installDir, rustcPathPart).exists()) {
             if (OS.windows) {
-                project.exec(new Action<ExecSpec>() {
+                projectOperations.exec(new Action<ExecSpec>() {
                     @Override
                     void execute(ExecSpec exec) {
                         exec.with {
@@ -228,7 +236,8 @@ class RustInstaller extends AbstractDistributionInstaller {
                     }
                 })
             } else {
-                ExecResult r = project.exec(new Action<ExecSpec>() {
+                def logLevel = projectOperations.gradleLogLevel
+                ExecResult r = projectOperations.exec(new Action<ExecSpec>() {
                     @Override
                     void execute(ExecSpec exec) {
                         exec.with {
@@ -236,7 +245,7 @@ class RustInstaller extends AbstractDistributionInstaller {
                             args("--destdir=${installDir.absolutePath}")
                             args("--prefix=/")
                             args("--without=rust-docs")
-                            if (project.logging.level >= LogLevel.INFO) {
+                            if (logLevel >= LogLevel.INFO) {
                                 args("--verbose")
                             }
                         }
@@ -247,20 +256,19 @@ class RustInstaller extends AbstractDistributionInstaller {
 
             println("done")
         } else {
-            project.logger.debug("Not installing Rust again as it already exists in ${installDir}")
+            logger.debug("Not installing Rust again as it already exists in ${installDir}")
         }
 
-    }
-
-    private File getBinary(final String relativePath) {
-        File binary = new File(distributionRoot, relativePath)
-        binary.exists() ? binary : null
     }
 
     private String getAbiString() {
         "${rustOs.hasAbiFlavours() ? '-' + rustAbi : ''}"
     }
 
+    @Override
+    File getByVersion(String version) {
+        getCargoExecutablePath(version).get()
+    }
     private final SupportedArch rustArch
     private final SupportedOs rustOs
     private final SupportedAbi rustAbi
