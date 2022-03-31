@@ -16,15 +16,15 @@
 
 package wooga.gradle.rust.internal
 
-import groovy.transform.InheritConstructors
 import org.gradle.api.Project
-import org.gradle.api.Task
-import org.ysb33r.grolifant.api.v4.exec.AbstractToolExtension
-import org.ysb33r.grolifant.api.v4.exec.ResolveExecutableByVersion
+import org.ysb33r.grolifant.api.errors.ConfigurationException
+import org.ysb33r.grolifant.api.v4.runnable.AbstractToolExtension
+import org.ysb33r.grolifant.api.v4.runnable.ExecUtils
+import org.ysb33r.grolifant.api.v4.runnable.ExecutableDownloader
+import org.ysb33r.grolifant.loadable.v6.DefaultProjectOperations
 
 class RustToolsExtension extends AbstractToolExtension {
 
-    static final String RUST_DEFAULT = '1.50.0'
     private static final Map<String, Object> SEARCH_PATH = [search: 'rustc']
 
     static Map<String, Object> searchPath() {
@@ -32,31 +32,18 @@ class RustToolsExtension extends AbstractToolExtension {
     }
 
     RustToolsExtension(Project project) {
-        super(project)
-        addVersionResolver(project)
+        super(new DefaultProjectOperations(project))
     }
 
-    RustToolsExtension(Task task, String projectExtName) {
-        super(task, projectExtName)
-        addVersionResolver(project)
+    @Override
+    protected String runExecutableAndReturnVersion() throws ConfigurationException {
+        ExecUtils.parseVersionFromOutput(projectOperations, ["--version"], executable.get(), {
+            it.split(' ')[1]
+        })
     }
 
-    private void addVersionResolver(Project project) {
-        def downloaderFactory = new ResolveExecutableByVersion.DownloaderFactory<RustInstaller>() {
-            @Override
-            RustInstaller create(Map<String, Object> options, String version, Project p) {
-                new RustInstaller(p, version)
-            }
-        }
-
-        def resolver = new ResolveExecutableByVersion.DownloadedExecutable<RustInstaller>() {
-            @Override
-            File getPath(RustInstaller downloader) {
-                downloader.getRustcExecutablePath()
-            }
-        }
-
-        def resolverFactory = new ResolveExecutableByVersion(project, downloaderFactory, resolver)
-        getResolverFactoryRegistry().registerExecutableKeyActions(resolverFactory)
+    @Override
+    protected ExecutableDownloader getDownloader() {
+        new RustInstaller(projectOperations)
     }
 }

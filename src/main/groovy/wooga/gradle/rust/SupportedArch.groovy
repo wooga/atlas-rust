@@ -15,7 +15,7 @@
 package wooga.gradle.rust
 
 import groovy.transform.CompileStatic
-import org.ysb33r.grolifant.api.OperatingSystem
+import org.ysb33r.grolifant.api.core.OperatingSystem
 
 /** Architectures supported by Rust.
  *

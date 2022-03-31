@@ -52,11 +52,11 @@ class DefaultRustPluginExtension implements RustPluginExtension {
         cargoHome = project.objects.directoryProperty()
         cargoHome.convention(project.layout.dir(project.provider({
             if (useLocalInstallation.present && useLocalInstallation.get()) {
-                rustToolsExtension.executable(searchPath())
+                rustToolsExtension.executableBySearchPath("rustc")
             } else {
-                rustToolsExtension.executable(version: version.get())
+                rustToolsExtension.executableByVersion(version)
             }
-            rustToolsExtension.resolvableExecutable.executable.parentFile.parentFile
+            rustToolsExtension.executable.map({it.parentFile.parentFile}).get()
         }.memoize())))
         cargoBinPath = project.objects.directoryProperty()
         cargoBinPath.convention(cargoHome.dir("bin"))

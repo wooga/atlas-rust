@@ -87,7 +87,6 @@ abstract class AbstractCargoTask extends DefaultTask implements CargoActionSpec 
 
     private final RegularFileProperty logFile
 
-    @InputFile
     @Internal
     @Override
     RegularFileProperty getLogFile() {
