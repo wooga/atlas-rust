@@ -35,7 +35,7 @@ enum SupportedOs {
             [AARCH_64, ARM, MIPS, MIPS_64, MIPS_64_EL, MIPS_EL, PPC, PPC_64, PPC_64_LE, S390, X86, X86_64],
             [GNU, GNU_EABI, GNU_EABIHF, GNU_ABI64]
     ),
-    MACOS('darwin', 'apple', [X86, X86_64]),
+    MACOS('darwin', 'apple', [X86_64, X86, AARCH_64]),
     NETBSD('netbsd', 'unknown', [X86_64]),
     WINDOWS('windows', 'pc', [X86, X86_64], [MSVC, GNU])
 

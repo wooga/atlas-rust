@@ -145,6 +145,12 @@ class RustInstaller extends AbstractDistributionInstaller implements ExecutableD
         this.rustOs = os
         this.rustArch = arch
         this.rustAbi = abi
+        this.installerPackageExtension = (OS.windows) ? ".msi" : ".tar.gz"
+        this.rustcPathPart = (OS.windows) ? "bin/rustc.exe" : "bin/rustc"
+        this.cargoPathPart = (OS.windows) ? "bin/cargo.exe" : "bin/cargo"
+        if (!rustOs.validAbi(rustAbi)) {
+            throw new UnsupportedConfigurationException(rustOs, rustAbi)
+        }
     }
 
     /** Obtains a download URI for Rust distribution given a specific version.
