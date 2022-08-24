@@ -17,7 +17,6 @@
 package wooga.gradle.rust
 
 import spock.lang.IgnoreIf
-import spock.lang.Requires
 import spock.lang.Unroll
 
 class RustLibProjectIntegrationSpec extends RustIntegrationSpec {
@@ -276,6 +275,16 @@ class RustLibProjectIntegrationSpec extends RustIntegrationSpec {
         "version"              | "version"                  | "1.49.0"                               | _                                                   | "String"                | PropertyLocation.script   | ""
         "version"              | "version"                  | "1.44.0"                               | _                                                   | "Provider<String>"      | PropertyLocation.script   | ""
         "version"              | _                          | _                                      | "1.50.0"                                            | _                       | PropertyLocation.none     | ""
+
+        "target"               | _                          | "x86_64-unkown-linux-gnu"              | _                                                   | _                       | PropertyLocation.env      | ""
+        "target"               | _                          | "x86_64-unkown-linux-gnu"              | _                                                   | _                       | PropertyLocation.property | ""
+        "target"               | _                          | "x86_64-unkown-linux-gnu"              | _                                                   | "String"                | PropertyLocation.script   | ""
+        "target"               | _                          | "x86_64-unkown-linux-gnu"              | _                                                   | "Provider<String>"      | PropertyLocation.script   | ""
+        "target"               | "target.set"               | "x86_64-unkown-linux-gnu"              | _                                                   | "String"                | PropertyLocation.script   | ""
+        "target"               | "target.set"               | "x86_64-unkown-linux-gnu"              | _                                                   | "Provider<String>"      | PropertyLocation.script   | ""
+        "target"               | "target"                   | "x86_64-unkown-linux-gnu"              | _                                                   | "String"                | PropertyLocation.script   | ""
+        "target"               | "target"                   | "x86_64-unkown-linux-gnu"              | _                                                   | "Provider<String>"      | PropertyLocation.script   | ""
+        "target"               | _                          | _                                      | null                                                | _                       | PropertyLocation.none     | ""
 
         extensionName = "rust"
         value = (type != _) ? wrapValueBasedOnType(rawValue, type.toString()) : rawValue

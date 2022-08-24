@@ -18,11 +18,7 @@ package wooga.gradle.rust.tasks
 
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
-import org.gradle.api.file.ConfigurableFileCollection
-import org.gradle.api.file.Directory
-import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.file.RegularFile
-import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.file.*
 import org.gradle.api.logging.LogLevel
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
@@ -360,6 +356,36 @@ abstract class AbstractCargoTask extends DefaultTask implements CargoActionSpec 
         this
     }
 
+    private final DirectoryProperty cargoHome
+
+    @Override
+    @InputDirectory
+    DirectoryProperty getCargoHome() {
+        cargoHome
+    }
+
+    @Override
+    void setCargoHome(File value) {
+        cargoHome.set(value)
+    }
+
+    @Override
+    void setCargoHome(Provider value) {
+        cargoHome.set(value)
+    }
+
+    @Override
+    CargoActionSpec cargoHome(File value) {
+        cargoHome.set(value)
+        this
+    }
+
+    @Override
+    CargoActionSpec cargoHome(Provider value) {
+        cargoHome.set(value)
+        this
+    }
+
     AbstractCargoTask() {
         additionalBuildArguments = project.objects.listProperty(String)
         logFile = project.objects.fileProperty()
@@ -371,6 +397,7 @@ abstract class AbstractCargoTask extends DefaultTask implements CargoActionSpec 
         target = project.objects.property(String)
         release = project.objects.property(Boolean)
         searchPath = project.objects.fileCollection()
+        cargoHome = project.objects.directoryProperty()
         cargoPath = project.objects.fileProperty()
         buildArguments = project.provider({
             List<String> args = []
@@ -415,7 +442,7 @@ abstract class AbstractCargoTask extends DefaultTask implements CargoActionSpec 
         def outStream = new LineBufferingOutputStream(outHandler)
         def outString = new StringWriter()
         outHandler.addWriter(outString)
-        if(logging.level >= LogLevel.INFO) {
+        if (logging.level >= LogLevel.INFO) {
             outHandler.addWriter(System.out.newPrintWriter())
         }
 
@@ -427,7 +454,7 @@ abstract class AbstractCargoTask extends DefaultTask implements CargoActionSpec 
             errHandler.addWriter(logFile.get().asFile.newPrintWriter())
         }
         errHandler.addWriter(errString)
-        if(logging.level >= LogLevel.INFO) {
+        if (logging.level >= LogLevel.INFO) {
             errHandler.addWriter(System.out.newPrintWriter())
         }
 
@@ -438,6 +465,7 @@ abstract class AbstractCargoTask extends DefaultTask implements CargoActionSpec 
                 execSpec.args buildArguments.get()
                 execSpec.workingDir workingDir.get().asFile.absolutePath
                 execSpec.environment RustInstaller.OS.pathVar, searchPath.asPath
+                execSpec.environment "CARGO_HOME", cargoHome.get().asFile.absolutePath
                 execSpec.ignoreExitValue = true
                 execSpec.errorOutput = errStream
                 execSpec.standardOutput = outStream

@@ -34,5 +34,6 @@ class RustConsts {
     static final PropertyLookup<Boolean> PATCH_CARGO_VERSION = new PropertyLookup("RUST_PATCH_CARGO_VERSION", "rust.patchCargoVersion", false)
 
     static final PropertyLookup<String> VERSION = new PropertyLookup<>("RUST_VERSION", "rust.version", "1.50.0")
+    static final PropertyLookup<String> TARGET = new PropertyLookup<>("RUST_TARGET", "rust.target", null)
     static final PropertyLookup<Boolean> USE_LOCAL_INSTALLATION = new PropertyLookup<>("RUST_USE_LOCAL_INSTALLATION", "rust.useLocalInstallation", false)
 }

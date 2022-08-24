@@ -114,4 +114,13 @@ interface RustPluginExtension<T extends RustPluginExtension> {
 
     T useLocalInstallation(Boolean value)
     T useLocalInstallation(Provider<Boolean> value)
+
+    Property<String> getTarget()
+
+    void setTarget(String value)
+    void setTarget(Provider<String> value)
+
+    T target(String value)
+    T target(Provider<String> value)
+
 }
