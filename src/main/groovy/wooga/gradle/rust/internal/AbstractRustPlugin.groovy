@@ -68,8 +68,10 @@ abstract class AbstractRustPlugin implements Plugin<Project> {
                 t.workingDir.convention(extension.cargoWorkingDir)
                 t.manifest.convention(copyManifestTask.destination)
                 t.logFile.convention(extension.logsDir.file("${t.name}.log"))
+                t.cargoHome.convention(extension.cargoHome)
                 t.cargoPath.convention(extension.cargoPath)
                 t.searchPath.setFrom(extension.searchPath)
+                t.target.convention(extension.target)
             }
         })
 

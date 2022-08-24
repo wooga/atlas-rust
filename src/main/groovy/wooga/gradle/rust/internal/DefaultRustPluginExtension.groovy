@@ -68,6 +68,7 @@ class DefaultRustPluginExtension implements RustPluginExtension {
         abiToolsSearchPath.setFrom(RustInstaller.OS.path)
         version = project.objects.property(String)
         useLocalInstallation = project.objects.property(Boolean)
+        target = project.objects.property(String)
     }
 
     final Property<Boolean> patchCargoVersion
@@ -365,6 +366,35 @@ class DefaultRustPluginExtension implements RustPluginExtension {
     @Override
     DefaultRustPluginExtension useLocalInstallation(Provider<Boolean> value) {
         setUseLocalInstallation(value)
+        this
+    }
+
+    final Property<String> target
+
+    @Override
+    Property<String> getTarget() {
+        target
+    }
+
+    @Override
+    void setTarget(String value) {
+        target.set(value)
+    }
+
+    @Override
+    void setTarget(Provider value) {
+        target.set(value)
+    }
+
+    @Override
+    RustPluginExtension target(String value) {
+        setTarget(value)
+        this
+    }
+
+    @Override
+    RustPluginExtension target(Provider value) {
+        setTarget(value)
         this
     }
 }

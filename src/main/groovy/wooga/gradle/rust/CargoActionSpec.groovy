@@ -100,6 +100,14 @@ interface CargoActionSpec<T extends CargoActionSpec> {
     T cargoPath(File value)
     T cargoPath(Provider<RegularFile> value)
 
+    DirectoryProperty getCargoHome()
+
+    void setCargoHome(File value)
+    void setCargoHome(Provider<Directory> value)
+
+    T cargoHome(File value)
+    T cargoHome(Provider<Directory> value)
+
     ConfigurableFileCollection getSearchPath()
 
     void setSearchPath(Iterable<Object> value)
