@@ -171,6 +171,14 @@ class RustLibProjectIntegrationSpec extends RustIntegrationSpec {
         "cargoHome"            | "cargoHome.set"            | osPath("build/custom/cargoHome")       | osPath("#projectDir#/build/custom/cargoHome")       | "Provider<Directory>"   | PropertyLocation.script   | " as relative path"
         "cargoHome"            | "cargoHome"                | osPath("build/custom/cargoHome")       | osPath("#projectDir#/build/custom/cargoHome")       | "File"                  | PropertyLocation.script   | " as relative path"
         "cargoHome"            | "cargoHome"                | osPath("build/custom/cargoHome")       | osPath("#projectDir#/build/custom/cargoHome")       | "Provider<Directory>"   | PropertyLocation.script   | " as relative path"
+
+
+        "rustupHome"           | _                          | osPath("build/custom/rustupHome")      | osPath("#projectDir#/build/custom/rustupHome")      | "File"                  | PropertyLocation.script   | " as relative path"
+        "rustupHome"           | _                          | osPath("build/custom/rustupHome")      | osPath("#projectDir#/build/custom/rustupHome")      | "Provider<Directory>"   | PropertyLocation.script   | " as relative path"
+        "rustupHome"           | "rustupHome.set"           | osPath("build/custom/rustupHome")      | osPath("#projectDir#/build/custom/rustupHome")      | "File"                  | PropertyLocation.script   | " as relative path"
+        "rustupHome"           | "rustupHome.set"           | osPath("build/custom/rustupHome")      | osPath("#projectDir#/build/custom/rustupHome")      | "Provider<Directory>"   | PropertyLocation.script   | " as relative path"
+        "rustupHome"           | "rustupHome"               | osPath("build/custom/rustupHome")      | osPath("#projectDir#/build/custom/rustupHome")      | "File"                  | PropertyLocation.script   | " as relative path"
+        "rustupHome"           | "rustupHome"               | osPath("build/custom/rustupHome")      | osPath("#projectDir#/build/custom/rustupHome")      | "Provider<Directory>"   | PropertyLocation.script   | " as relative path"
         //"cargoHome"         | _                       | _                              | "#projectDir#/build/rust-project"           | _                       | PropertyLocation.none     | ""
 
         //"rustcPath"            | _                          | "/custom/cargoHome"            | _                                           | _                       | PropertyLocation.env      | ""

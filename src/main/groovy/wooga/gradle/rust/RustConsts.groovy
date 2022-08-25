@@ -35,5 +35,6 @@ class RustConsts {
 
     static final PropertyLookup<String> VERSION = new PropertyLookup<>("RUST_VERSION", "rust.version", "1.50.0")
     static final PropertyLookup<String> TARGET = new PropertyLookup<>("RUST_TARGET", "rust.target", null)
+    static final PropertyLookup<File> RUSTUP_HOME = new PropertyLookup<>("RUST_RUSTUP_HOME", "rust.rustupHome", null)
     static final PropertyLookup<Boolean> USE_LOCAL_INSTALLATION = new PropertyLookup<>("RUST_USE_LOCAL_INSTALLATION", "rust.useLocalInstallation", false)
 }
