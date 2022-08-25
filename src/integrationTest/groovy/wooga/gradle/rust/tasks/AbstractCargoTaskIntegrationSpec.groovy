@@ -238,4 +238,38 @@ abstract class AbstractCargoTaskIntegrationSpec extends RustIntegrationSpec {
         outputContains(result, "-enableAddressSanitizer YES")
         outputContains(result, "-enableThreadSanitizer NO")
     }
+
+    @Unroll
+    def "outputDir depends on selected target and build configuration"() {
+        given: "a custom archive task"
+        buildFile << """
+            ${workingRustTaskConfig}
+            ${testTaskName} {
+                target = ${wrapValueBasedOnType(target, "String")}
+                release = ${wrapValueBasedOnType(release, "Boolean")}
+            }
+        """.stripIndent()
+
+        and: "a task to read back the value"
+        buildFile << """
+            task("readValue") {
+                doLast {
+                    println("property: " + ${testTaskName}.${property}.get())
+                }
+            }
+        """.stripIndent()
+
+        when:
+        def result = runTasksSuccessfully("readValue")
+
+        then:
+        outputContains(result, "property: " + new File(projectDir, expectedValue.toString()))
+
+        where:
+        property    | target                     | release | expectedValue
+        "outputDir" | null                       | false   | "build/rust-project/target/debug"
+        "outputDir" | null                       | true    | "build/rust-project/target/release"
+        "outputDir" | "x86_64-unknown-linux-gnu" | false   | "build/rust-project/target/x86_64-unknown-linux-gnu/debug"
+        "outputDir" | "x86_64-unknown-linux-gnu" | true    | "build/rust-project/target/x86_64-unknown-linux-gnu/release"
+    }
 }
