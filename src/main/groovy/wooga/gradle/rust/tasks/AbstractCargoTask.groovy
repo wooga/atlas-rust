@@ -386,6 +386,37 @@ abstract class AbstractCargoTask extends DefaultTask implements CargoActionSpec 
         this
     }
 
+    private final DirectoryProperty rustupHome
+
+    @Override
+    @InputDirectory
+    @Optional
+    DirectoryProperty getRustupHome() {
+        rustupHome
+    }
+
+    @Override
+    void setRustupHome(File value) {
+        rustupHome.set(value)
+    }
+
+    @Override
+    void setRustupHome(Provider value) {
+        rustupHome.set(value)
+    }
+
+    @Override
+    CargoActionSpec rustupHome(File value) {
+        setRustupHome(value)
+        this
+    }
+
+    @Override
+    CargoActionSpec rustupHome(Provider value) {
+        setRustupHome(value)
+        this
+    }
+
     AbstractCargoTask() {
         additionalBuildArguments = project.objects.listProperty(String)
         logFile = project.objects.fileProperty()
@@ -398,6 +429,7 @@ abstract class AbstractCargoTask extends DefaultTask implements CargoActionSpec 
         release = project.objects.property(Boolean)
         searchPath = project.objects.fileCollection()
         cargoHome = project.objects.directoryProperty()
+        rustupHome = project.objects.directoryProperty()
         cargoPath = project.objects.fileProperty()
         buildArguments = project.provider({
             List<String> args = []
@@ -466,6 +498,9 @@ abstract class AbstractCargoTask extends DefaultTask implements CargoActionSpec 
                 execSpec.workingDir workingDir.get().asFile.absolutePath
                 execSpec.environment RustInstaller.OS.pathVar, searchPath.asPath
                 execSpec.environment "CARGO_HOME", cargoHome.get().asFile.absolutePath
+                if (rustupHome.present) {
+                    execSpec.environment "RUSTUP_HOME", rustupHome.get().asFile.absolutePath
+                }
                 execSpec.ignoreExitValue = true
                 execSpec.errorOutput = errStream
                 execSpec.standardOutput = outStream

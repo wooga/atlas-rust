@@ -50,6 +50,7 @@ class DefaultRustPluginExtension implements RustPluginExtension {
         reportsDir = project.objects.directoryProperty()
         manifest = project.objects.fileProperty()
         cargoHome = project.objects.directoryProperty()
+        rustupHome = project.objects.directoryProperty()
         cargoHome.convention(project.layout.dir(project.provider({
             if (useLocalInstallation.present && useLocalInstallation.get()) {
                 rustToolsExtension.executableBySearchPath("rustc")
@@ -277,6 +278,34 @@ class DefaultRustPluginExtension implements RustPluginExtension {
         this
     }
 
+    private final DirectoryProperty rustupHome
+
+    @Override
+    DirectoryProperty getRustupHome() {
+        rustupHome
+    }
+
+    @Override
+    void setRustupHome(File value) {
+        rustupHome.set(value)
+    }
+
+    @Override
+    void setRustupHome(Provider value) {
+        rustupHome.set(value)
+    }
+
+    @Override
+    RustPluginExtension rustupHome(File value) {
+        setRustupHome(value)
+        this
+    }
+
+    @Override
+    RustPluginExtension rustupHome(Provider value) {
+        setRustupHome(value)
+        this
+    }
     private final ConfigurableFileCollection abiToolsSearchPath
 
     @Override

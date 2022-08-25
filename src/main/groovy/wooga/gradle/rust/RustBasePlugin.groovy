@@ -121,6 +121,7 @@ class RustBasePlugin implements Plugin<Project> {
         final ReportingExtension reportingExtension = (ReportingExtension) project.getExtensions().getByName(ReportingExtension.NAME)
         extension.reportsDir.convention(project.layout.dir(project.provider({ reportingExtension.file("rust") })))
         extension.target.convention(lookupValueInEnvAndPropertiesProvider(RustConsts.TARGET))
+        extension.rustupHome.convention(lookupDirectoryValueInEnvAndPropertiesProvider(RustConsts.RUSTUP_HOME ))
         extension
     }
 

@@ -89,6 +89,14 @@ interface RustPluginExtension<T extends RustPluginExtension> {
     T cargoHome(File value)
     T cargoHome(Provider<Directory> value)
 
+    DirectoryProperty getRustupHome()
+
+    void setRustupHome(File value)
+    void setRustupHome(Provider<Directory> value)
+
+    T rustupHome(File value)
+    T rustupHome(Provider<Directory> value)
+
     FileCollection getAbiToolsSearchPath()
 
     void setAbiToolsSearchPath(Iterable<Object> value)
