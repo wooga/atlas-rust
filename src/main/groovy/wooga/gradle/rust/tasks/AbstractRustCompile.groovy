@@ -56,7 +56,14 @@ abstract class AbstractRustCompile extends AbstractRustLifecycleTask {
 
     @OutputDirectory
     Provider<Directory> getOutputDir() {
-        workingDir.dir("target/${release.getOrElse(false) ? 'release' : 'debug'}")
+        def config = release.getOrElse(false) ? 'release': 'debug'
+        def path = "target"
+        if(target.present) {
+            path += "/${target.get()}"
+        }
+        path += "/${config}"
+
+        workingDir.dir(path)
     }
 
     @Input
