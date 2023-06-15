@@ -79,7 +79,7 @@ class RustTest extends AbstractRustLifecycleTask implements Reporting<RustTestRe
 
     RustTest() {
         reports = instantiator.newInstance(DefaultRustTestReport.class, this)
-        reports.txt.enabled = true
+        reports.txt.required.set(true)
 
         cargoCommandArguments = project.provider({
             ["--", '--nocapture']
@@ -91,7 +91,7 @@ class RustTest extends AbstractRustLifecycleTask implements Reporting<RustTestRe
         String msg = ''
         def output = out
         if (!output.empty) {
-            if (reports.getTxt().isEnabled()) {
+            if (reports.getTxt().required.orElse(false)) {
                 File report = reports.getTxt().destination
                 report.parentFile.mkdirs()
                 report.text = out
@@ -119,7 +119,7 @@ class RustTest extends AbstractRustLifecycleTask implements Reporting<RustTestRe
             if (numTests) {
                 msg = "${numTests} tests completed, ${passed} passed; ${failed} failed; ${ignored} ignored; ${measured} measured; ${filtered} filtered out."
                 if (exitValue) {
-                    if (reports.txt.enabled) {
+                    if (reports.txt.required.orElse(false)) {
                         msg = """
                         ${msg}
 
